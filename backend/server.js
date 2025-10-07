@@ -1,10 +1,18 @@
 const express = require("express");
+<<<<<<< HEAD
 const mongoose = require("mongoose"); // 👈 Cần có Mongoose
 const dotenv = require("dotenv");    // 👈 Cần có dotenv
 const app = express();
 
 // Load biến môi trường từ file .env
 dotenv.config();
+=======
+const cors = require("cors");
+const app = express();
+
+// Cho phép frontend gọi API backend
+app.use(cors());
+>>>>>>> 335b60617caba4e4217f9a546e6d6bbb79c6c38c
 
 // Middleware đọc dữ liệu JSON
 app.use(express.json());
@@ -33,5 +41,6 @@ connectDB();
 const userRoutes = require("./routes/user");
 app.use("/users", userRoutes); 
 
+// Chạy server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
