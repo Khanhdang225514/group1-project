@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+// === FRONTEND VERSION ===
+console.log("Đây là phiên bản FRONTEND");
+
 function App() {
   const [users, setUsers] = useState([]);
   const [name, setName] = useState("");
