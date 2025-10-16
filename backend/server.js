@@ -1,17 +1,18 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const cors = require("cors"); // 👈 Thêm dòng này
+const cors = require("cors");
+
 const app = express();
 
-// Load biến môi trường từ file .env
+// Load biến môi trường
 dotenv.config();
 
 // Middleware
 app.use(express.json());
-app.use(cors()); // 👈 Thêm dòng này để cho phép React truy cập API
+app.use(cors());
 
-// 1. THIẾT LẬP KẾT NỐI MONGODB
+// 1️⃣ KẾT NỐI MONGODB
 const connectDB = async () => {
   try {
     const mongoURI = process.env.MONGO_URI;
@@ -26,12 +27,12 @@ const connectDB = async () => {
   }
 };
 
-// Gọi hàm kết nối database
 connectDB();
 
-// Import route user
-const userRoutes = require("./routes/user");
+// 2️⃣ IMPORT ROUTER
+const userRoutes = require("./routes/userRoutes"); // ✅ đúng file
 app.use("/users", userRoutes);
 
+// 3️⃣ KHỞI CHẠY SERVER
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
