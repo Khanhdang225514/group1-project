@@ -7,7 +7,8 @@ function App() {
 
   // Lấy danh sách user từ backend
   const fetchUsers = async () => {
-    const res = await fetch("http://localhost:3000/api/users");
+    // Đảm bảo URL là chính xác (Không có /api/ nếu Backend không có)
+    const res = await fetch("http://localhost:3000/users"); 
     const data = await res.json();
     setUsers(data);
   };
@@ -15,14 +16,14 @@ function App() {
   // Thêm user mới
   const addUser = async (e) => {
     e.preventDefault();
-    await fetch("http://localhost:3000/api/users", {
+    await fetch("http://localhost:3000/users", { 
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email }),
     });
     setName("");
     setEmail("");
-    fetchUsers();
+    fetchUsers(); // Gọi lại API để cập nhật danh sách
   };
 
   useEffect(() => {
@@ -97,8 +98,8 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {users.map((u, i) => (
-            <tr key={i}>
+          {users.map((u) => (
+            <tr key={u._id}> {/* 👈 SỬA LỖI KEY PROP: Dùng _id */}
               <td style={{ border: "1px solid #ccc", padding: "8px" }}>
                 {u.name}
               </td>

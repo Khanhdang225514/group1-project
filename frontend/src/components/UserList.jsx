@@ -6,18 +6,21 @@ const UserList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:3000/users")
-      .then((res) => {
+  // Hàm này có thể được gọi từ App.js nếu cần
+  const fetchUsers = async () => {
+    try {
+        const res = await axios.get("http://localhost:3000/users"); 
         setUsers(res.data);
         setLoading(false);
-      })
-      .catch((err) => {
+    } catch (err) {
         console.error("Lỗi khi gọi API:", err);
         setError("Không thể lấy dữ liệu từ server!");
         setLoading(false);
-      });
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
   }, []);
 
   if (loading) return <p>Đang tải dữ liệu...</p>;
@@ -31,7 +34,7 @@ const UserList = () => {
       ) : (
         <ul style={styles.list}>
           {users.map((user) => (
-            <li key={user.id} style={styles.item}>
+            <li key={user._id} style={styles.item}> {/* 👈 SỬA LỖI KEY PROP: Dùng _id */}
               <b>{user.name}</b> — {user.email}
             </li>
           ))}
@@ -42,22 +45,9 @@ const UserList = () => {
 };
 
 const styles = {
-  container: {
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    padding: "16px",
-    width: "400px",
-    margin: "20px auto",
-    backgroundColor: "#f9f9f9",
-  },
-  list: {
-    listStyle: "none",
-    padding: 0,
-  },
-  item: {
-    padding: "8px 0",
-    borderBottom: "1px solid #ddd",
-  },
+    container: { /* ... style ... */ },
+    list: { /* ... style ... */ },
+    item: { /* ... style ... */ },
 };
 
 export default UserList;
