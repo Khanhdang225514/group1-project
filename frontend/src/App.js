@@ -2,12 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// === FRONTEND VERSION ===
-console.log("Đây là phiên bản FRONTEND");
-
-// === BACKEND VERSION ===
-console.log("Đây là phiên bản BACKEND");
-
+// === MERGED VERSION ===
+console.log("Đây là phiên bản đã hợp nhất FRONTEND + BACKEND");
 
 function App() {
   const [users, setUsers] = useState([]);
