@@ -5,6 +5,10 @@ import "react-toastify/dist/ReactToastify.css";
 // === FRONTEND VERSION ===
 console.log("Đây là phiên bản FRONTEND");
 
+// === BACKEND VERSION ===
+console.log("Đây là phiên bản BACKEND");
+
+
 function App() {
   const [users, setUsers] = useState([]);
   const [name, setName] = useState("");
