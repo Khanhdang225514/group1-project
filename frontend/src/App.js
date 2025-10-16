@@ -31,7 +31,7 @@ function App() {
 
   return (
     <div style={{ maxWidth: "600px", margin: "50px auto", fontFamily: "Arial" }}>
-      <h1 style={{ textAlign: "center", color: "#007bff" }}>Quản lý người dùng</h1>
+      <h1 style={{ textAlign: "center", color: "#11457cff" }}>Quản lý người dùng</h1>
 
       <form
         onSubmit={addUser}
@@ -71,7 +71,7 @@ function App() {
         <button
           type="submit"
           style={{
-            backgroundColor: "#007bff",
+            backgroundColor: "#05a83bff",
             color: "white",
             border: "none",
             borderRadius: "4px",
