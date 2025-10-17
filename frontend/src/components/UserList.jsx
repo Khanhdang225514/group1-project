@@ -1,53 +1,57 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
-const UserList = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const AddUser = ({ fetchUsers }) => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
 
-  // Hàm này có thể được gọi từ App.js nếu cần
-  const fetchUsers = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validate dữ liệu
+    if (!name.trim()) {
+      setError("Name không được để trống");
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Email không hợp lệ");
+      return;
+    }
+
     try {
-        const res = await axios.get("http://localhost:3000/users"); 
-        setUsers(res.data);
-        setLoading(false);
+      await axios.post("http://localhost:3000/users", { name, email });
+      setName("");
+      setEmail("");
+      setError("");
+      fetchUsers(); // cập nhật lại danh sách
     } catch (err) {
-        console.error("Lỗi khi gọi API:", err);
-        setError("Không thể lấy dữ liệu từ server!");
-        setLoading(false);
+      console.error(err);
+      setError("Có lỗi khi thêm user");
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  if (loading) return <p>Đang tải dữ liệu...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
-
   return (
-    <div style={styles.container}>
-      <h2>Danh sách người dùng</h2>
-      {users.length === 0 ? (
-        <p>Không có người dùng nào.</p>
-      ) : (
-        <ul style={styles.list}>
-          {users.map((user) => (
-            <li key={user._id} style={styles.item}> {/* 👈 SỬA LỖI KEY PROP: Dùng _id */}
-              <b>{user.name}</b> — {user.email}
-            </li>
-          ))}
-        </ul>
-      )}
+    <div style={{ margin: "20px 0" }}>
+      <h3>Thêm User</h3>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <button type="submit">Thêm</button>
+      </form>
     </div>
   );
 };
 
-const styles = {
-    container: { /* ... style ... */ },
-    list: { /* ... style ... */ },
-    item: { /* ... style ... */ },
-};
-
-export default UserList;
+export default AddUser;
