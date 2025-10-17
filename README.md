@@ -20,8 +20,7 @@ Dán Chuỗi Kết nối MongoDB Atlas đã thay mật khẩu (URL Encoded) củ
 
 Plaintext
 
-# Thay thế YOUR_PASSWORD bằng mật khẩu đã mã hóa của user Atlas
-MONGO_URI="mongodb+srv://groupuser:YOUR_PASSWORD@cluster0.abcde.mongodb.net/groupDB?retryWrites=true&w=majority&appName=Cluster0"
+MONGO_URI="mongodb+srv://groupuser:Hieu%40152004@cluster0.abcde.mongodb.net/groupDB?retryWrites=true&w=majority&appName=Cluster0"
 2. Cài đặt Phụ thuộc
 Trong thư mục gốc của dự án (/group1-project), chạy các lệnh sau để cài đặt các gói phụ thuộc:
 
@@ -53,8 +52,8 @@ Bash
 cd frontend
 npm start
 👤 ĐÓNG GÓP TỪNG THÀNH VIÊN (Kiêm nhiệm)
-Vai trò Database (S3): [Tên của bạn]. Đóng góp chính: Thiết lập MongoDB Atlas, tạo User Model, thực hiện Squash Commit, chuẩn hóa Git cuối cùng.
+Vai trò Database (S3): Nguyễn TRọng Hiếu. Đóng góp chính: Thiết lập MongoDB Atlas, tạo User Model, thực hiện Squash Commit, chuẩn hóa Git cuối cùng.
 
-Vai trò Backend (S1): [Tên của bạn]. Đóng góp chính: Viết API CRUD đầy đủ (GET, POST, PUT, DELETE) bằng Mongoose, xử lý CORS, và cấu trúc thư mục backend.
+Vai trò Backend (S1): Nguyễn Thành Danh. Đóng góp chính: Viết API CRUD đầy đủ (GET, POST, PUT, DELETE) bằng Mongoose, xử lý CORS, và cấu trúc thư mục backend.
 
-Vai trò Frontend (S2): [Tên của bạn]. Đóng góp chính: Xây dựng giao diện React, kết nối API với MongoDB, thêm nút Sửa/Xóa, và Validation form.
+Vai trò Frontend (S2): Phạm Huỳnh Khánh Đăng. Đóng góp chính: Xây dựng giao diện React, kết nối API với MongoDB, thêm nút Sửa/Xóa, và Validation form.
