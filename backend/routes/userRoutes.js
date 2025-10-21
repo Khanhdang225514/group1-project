@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
-const upload = require('../middlewares/multer');
+const upload = require('../middleware/multer');
 const userController = require('../controllers/userController');
-const verifyToken = require('../middlewares/auth'); // middleware xác thực JWT
+const verifyToken = require('../middleware/auth'); // middleware xác thực JWT
 
-// Lấy toàn bộ user
+// ======= CRUD cơ bản =======
 router.get('/', async (req, res) => {
     try {
         const users = await User.find();
@@ -15,7 +15,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Thêm user mới
 router.post('/', async (req, res) => {
     const user = new User({
         name: req.body.name,
@@ -30,7 +29,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Cập nhật user
 router.put('/:id', async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(
@@ -44,7 +42,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Xóa user
 router.delete('/:id', async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
@@ -54,14 +51,14 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-module.exports = router;
-
+// ======= Các route xác thực =======
 router.post('/signup', userController.signup);
 router.post('/login', userController.login);
 router.post('/forgot-password', userController.forgotPassword);
 router.post('/reset-password', userController.resetPassword);
 
-// Upload avatar (cần có token)
+// Upload avatar (cần token)
 router.post('/upload-avatar', verifyToken, upload.single('image'), userController.uploadAvatar);
 
+// ======= Xuất router =======
 module.exports = router;

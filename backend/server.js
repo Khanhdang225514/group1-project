@@ -41,6 +41,8 @@ connectDB();
 
 const authRoutes = require('./routes/authRoutes');       // /api/auth
 const userRoutes = require('./routes/userRoutes');       // /api/users  (CRUD, admin)
+app.use('/api/users', userRoutes);
+
 const profileRoutes = require('./routes/profileRoutes'); // /api/profile
 const adminRoutes = require('./routes/adminRoutes');     // /api/admin (nếu bạn tách riêng)
 
@@ -70,5 +72,3 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
 
-const userRoutes = require('./routes/userRoutes');
-app.use('/api/users', userRoutes);

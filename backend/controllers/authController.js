@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const cloudinary = require('../config/cloudinary');
 
 // Đăng ký
 exports.signup = async (req, res) => {
@@ -43,7 +44,7 @@ exports.logout = (req, res) => {
 };
 
 
-const cloudinary = require('cloudinary').v2;
+
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
@@ -91,4 +92,3 @@ exports.uploadAvatar = async (req, res) => {
   }
 };
 
-const cloudinary = require('../config/cloudinary');
