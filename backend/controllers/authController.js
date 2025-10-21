@@ -90,3 +90,5 @@ exports.uploadAvatar = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+const cloudinary = require('../config/cloudinary');

@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const upload = require('../middlewares/multer');
+const userController = require('../controllers/userController');
+const verifyToken = require('../middlewares/auth'); // middleware xác thực JWT
 
 // Lấy toàn bộ user
 router.get('/', async (req, res) => {
@@ -50,5 +53,15 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+module.exports = router;
+
+router.post('/signup', userController.signup);
+router.post('/login', userController.login);
+router.post('/forgot-password', userController.forgotPassword);
+router.post('/reset-password', userController.resetPassword);
+
+// Upload avatar (cần có token)
+router.post('/upload-avatar', verifyToken, upload.single('image'), userController.uploadAvatar);
 
 module.exports = router;
