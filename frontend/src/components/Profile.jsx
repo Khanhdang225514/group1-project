@@ -18,7 +18,7 @@ export default function Profile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/profile", {
+        const res = await axios.get("http://localhost:5000/api/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -51,7 +51,7 @@ export default function Profile() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.put("http://localhost:5000/profile", user, {
+      const res = await axios.put("http://localhost:5000/api/profile", user, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
