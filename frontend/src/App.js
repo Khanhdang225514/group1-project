@@ -1,212 +1,72 @@
-import React, { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-// === MERGED VERSION ===
-console.log("Đây là phiên bản đã hợp nhất FRONTEND + BACKEND");
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import UserList from "./components/UserList";
+import "./App.css";
 
 function App() {
-  const [users, setUsers] = useState([]);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [editingUser, setEditingUser] = useState(null);
+  const token = localStorage.getItem("token");
 
-  // 🟢 Lấy danh sách user từ backend
-  const fetchUsers = async () => {
-    try {
-      // SỬA LỖI: Trỏ đến port 5000 và thêm /api
-      const res = await fetch("http://localhost:5000/api/users");
-      const data = await res.json();
-      setUsers(data);
-    } catch (err) {
-      console.error("❌ Lỗi khi tải dữ liệu:", err);
-      toast.error("Không thể tải danh sách người dùng!");
-    }
-  };
-
-  // 🟢 Thêm hoặc cập nhật user
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      if (editingUser) {
-        // 👉 Nếu đang chỉnh sửa
-        // SỬA LỖI: Trỏ đến port 5000 và thêm /api
-        await fetch(`http://localhost:5000/api/users/${editingUser._id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email }),
-        });
-        toast.success("✅ Cập nhật người dùng thành công!");
-      } else {
-        // 👉 Nếu đang thêm mới
-        // SỬA LỖI: Trỏ đến port 5000 và thêm /api
-        await fetch("http://localhost:5000/api/users", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email }),
-        });
-        toast.success("✅ Thêm người dùng thành công");
-      }
-
-      // Reset form
-      setName("");
-      setEmail("");
-      setEditingUser(null);
-
-      // Cập nhật danh sách
-      fetchUsers();
-    } catch (err) {
-      console.error("❌ Lỗi khi lưu:", err);
-      toast.error("⚠️ Có lỗi xảy ra khi lưu dữ liệu!");
-    }
-  };
-
-  // 🟢 Xóa user
-  const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa người dùng này?")) return;
-
-    try {
-      // SỬA LỖI: Trỏ đến port 5000 và thêm /api
-      await fetch(`http://localhost:5000/api/users/${id}`, { method: "DELETE" });
-      toast.info("🗑️ Xóa người dùng thành công!");
-      fetchUsers();
-    } catch (err) {
-      console.error("❌ Lỗi khi xóa:", err);
-      toast.error("⚠️ Không thể xóa người dùng!");
-    }
-  };
-
-  // 🟢 Chọn user để sửa
-  const handleEdit = (user) => {
-    setEditingUser(user);
-    setName(user.name);
-    setEmail(user.email);
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-    return (
-    <div style={{ maxWidth: "800px", margin: "50px auto", fontFamily: "Arial" }}>
-      {/* Thông báo Toast */}
-      <ToastContainer position="top-center" autoClose={2000} />
-       <h1 style={{ textAlign: "center", color: "#007bff" }}>Quản lý người dùng</h1>
-      
-      {/* Form thêm / sửa */}
-      <form
-        onSubmit={handleSubmit}
+  return (
+    <Router>
+      <div
         style={{
-          display: "flex",
-          gap: "10px",
-          justifyContent: "center",
-          marginBottom: "20px",
+          fontFamily: "'Segoe UI', Arial, sans-serif",
+          maxWidth: "900px",
+          margin: "40px auto",
         }}
       >
-        <input
-          type="text"
-          placeholder="Nhập tên"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
+        {/* --- Thanh menu điều hướng --- */}
+        <nav
           style={{
-            padding: "8px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            width: "30%",
-          }}
-        />
-        <input
-          type="email"
-          placeholder="Nhập email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{
-            padding: "8px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            width: "30%",
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            backgroundColor: editingUser ? "#28a745" : "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            padding: "8px 15px",
-            cursor: "pointer",
+            display: "flex",
+            justifyContent: "center",
+            gap: "20px",
+            marginBottom: "30px",
           }}
         >
-          {editingUser ? "💾 Cập nhật" : "➕ Thêm"}
-        </button>
-      </form>
-
-      {/* Danh sách user */}
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          textAlign: "center",
-        }}
-      >
-        <thead>
-          <tr style={{ backgroundColor: "#f0f0f0" }}>
-            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Tên</th>
-            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Email</th>
-            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.length === 0 ? (
-            <tr>
-              <td colSpan="3" style={{ padding: "10px" }}>
-                Không có người dùng nào
-              </td>
-            </tr>
+          {!token ? (
+            <>
+              <Link to="/login">Đăng nhập</Link>
+              <Link to="/signup">Đăng ký</Link>
+            </>
           ) : (
-            users.map((u) => (
-              <tr key={u._id}>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{u.name}</td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{u.email}</td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                  <button
-                    onClick={() => handleEdit(u)}
-                    style={{
-                      marginRight: "10px",
-                      backgroundColor: "#ffc107",
-                      border: "none",
-                      borderRadius: "4px",
-                      padding: "5px 10px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    ✏️ Sửa
-                  </button>
-                  <button
-                    onClick={() => handleDelete(u._id)}
-                    style={{
-                      backgroundColor: "#dc3545",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "4px",
-                      padding: "5px 10px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    🗑️ Xóa
-                  </button>
-                </td>
-              </tr>
-            ))
+            <>
+              <Link to="/users">Quản lý người dùng</Link>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("token");
+                  window.location.href = "/login";
+                }}
+                style={{
+                  border: "none",
+                  backgroundColor: "#dc3545",
+                  color: "white",
+                  borderRadius: "5px",
+                  padding: "6px 12px",
+                  cursor: "pointer",
+                }}
+              >
+                Đăng xuất
+              </button>
+            </>
           )}
-        </tbody>
-      </table>
-    </div>
+        </nav>
+
+        {/* --- Cấu hình các route --- */}
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/users"
+            element={token ? <UserList /> : <Navigate to="/login" />}
+          />
+          <Route path="*" element={<Navigate to={token ? "/users" : "/login"} />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
-  export default App;
+export default App;

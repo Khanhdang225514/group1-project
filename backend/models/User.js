@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -20,6 +19,26 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user', // Mặc định tài khoản mới là 'user'
   }
+  ,
+  avatar: {
+    type: String,
+  },
+  resetToken: {
+    type: String,
+  },
+  resetTokenExpires: {
+    type: Date,
+  }
 }, { timestamps: true });
+
+// Hide sensitive fields when converting to JSON
+userSchema.set('toJSON', {
+  transform: function (doc, ret, options) {
+    delete ret.password;
+    delete ret.resetToken;
+    delete ret.resetTokenExpires;
+    return ret;
+  }
+});
 
 module.exports = mongoose.model('User', userSchema);

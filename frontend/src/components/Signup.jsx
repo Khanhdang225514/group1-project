@@ -1,29 +1,77 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { registerUser } from "../api/auth";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-function SignupForm() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Signup = () => {
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
 
-  const handleSignup = async (e) => {
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:3000/users/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password })
-    });
-    const data = await res.json();
-    alert(data.message);
+    try {
+      await registerUser(form);
+      toast.success("Đăng ký thành công!");
+      setForm({ name: "", email: "", password: "" });
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Đăng ký thất bại!");
+    }
   };
 
   return (
-    <form onSubmit={handleSignup}>
-      <input placeholder="Name" value={name} onChange={e=>setName(e.target.value)} required />
-      <input placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} required />
-      <input placeholder="Password" type="password" value={password} onChange={e=>setPassword(e.target.value)} required />
-      <button type="submit">Sign Up</button>
-    </form>
+    <div style={{ textAlign: "center", marginTop: 50 }}>
+      <ToastContainer position="top-center" />
+      <h2>Đăng ký tài khoản</h2>
+      <form onSubmit={handleSubmit} style={{ display: "inline-block" }}>
+        <input
+          type="text"
+          name="name"
+          placeholder="Tên"
+          value={form.name}
+          onChange={handleChange}
+          required
+          style={{ margin: 5, padding: 8 }}
+        />
+        <br />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+          required
+          style={{ margin: 5, padding: 8 }}
+        />
+        <br />
+        <input
+          type="password"
+          name="password"
+          placeholder="Mật khẩu"
+          value={form.password}
+          onChange={handleChange}
+          required
+          style={{ margin: 5, padding: 8 }}
+        />
+        <br />
+        <button
+          type="submit"
+          style={{
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: 5,
+            padding: "8px 15px",
+            cursor: "pointer",
+          }}
+        >
+          Đăng ký
+        </button>
+      </form>
+    </div>
   );
-}
+};
 
-export default SignupForm;
+export default Signup;
