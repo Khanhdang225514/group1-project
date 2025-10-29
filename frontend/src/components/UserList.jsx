@@ -1,75 +1,99 @@
-import React, { useState } from "react";
+// src/components/UserList.jsx
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
-const AddUser = ({ fetchUsers }) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  // 1. THÊM STATE CHO PASSWORD
-  const [password, setPassword] = useState(""); 
-  const [error, setError] = useState("");
+function UserList() {
+  const [users, setUsers] = useState([]);
+  const token = localStorage.getItem("token");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Lấy thông tin user hiện tại từ token
+  const currentUser = token
+    ? JSON.parse(atob(token.split(".")[1])) // decode payload JWT
+    : null;
 
-    // Validate dữ liệu
-    if (!name.trim()) {
-      setError("Name không được để trống");
-      return;
-    }
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Email không hợp lệ");
-      return;
-    }
-    // 2. THÊM VALIDATE CHO PASSWORD (Ví dụ: ít nhất 6 ký tự)
-    if (password.length < 6) { 
-      setError("Mật khẩu phải có ít nhất 6 ký tự");
-      return;
-    }
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/users", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsers(res.data);
+      } catch (err) {
+        toast.error(err.response?.data?.message || "Không lấy được danh sách user");
+      }
+    };
 
+    if (token) fetchUsers();
+  }, [token]);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Bạn có chắc muốn xóa người dùng này?")) return;
     try {
-      // 3. THÊM PASSWORD VÀO DỮ LIỆU GỬI ĐI
-      await axios.post("http://localhost:5000/api/users", { name, email, password }); 
-      
-      setName("");
-      setEmail("");
-      setPassword(""); // Reset password field
-      setError("");
-      fetchUsers(); // cập nhật lại danh sách
+      await axios.delete(`http://localhost:5000/api/users/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Xóa thành công!");
+      setUsers((prev) => prev.filter((u) => u._id !== id));
     } catch (err) {
-      console.error(err);
-      // Hiển thị lỗi cụ thể từ server nếu có
-      setError(err.response?.data?.message || "Có lỗi khi thêm user"); 
+      toast.error(err.response?.data?.message || "Xóa thất bại");
     }
   };
 
   return (
-    <div style={{ margin: "20px 0" }}>
-      <h3>Thêm User</h3>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        {/* 4. THÊM Ô INPUT CHO PASSWORD */}
-        <input 
-          type="password" 
-          placeholder="Password" 
-          value={password} 
-          onChange={(e) => setPassword(e.target.value)} 
-        />
-        <button type="submit">Thêm</button>
-      </form>
+    <div style={{ maxWidth: "800px", margin: "20px auto" }}>
+      <h2>Danh sách người dùng</h2>
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <thead>
+          <tr style={{ borderBottom: "1px solid #ccc" }}>
+            <th>Tên</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((u) => {
+            // Ẩn nút Xóa nếu không phải admin và không phải chính họ
+            const canDelete =
+              currentUser?.role === "admin" || currentUser?.id === u._id;
+
+            return (
+              <tr key={u._id} style={{ borderBottom: "1px solid #eee" }}>
+                <td>{u.name}</td>
+                <td>{u.email}</td>
+                <td>{u.role}</td>
+                <td>
+                  {canDelete && (
+                    <button
+                      onClick={() => handleDelete(u._id)}
+                      style={{
+                        backgroundColor: "#dc3545",
+                        color: "white",
+                        border: "none",
+                        padding: "5px 10px",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Xóa
+                    </button>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+          {users.length === 0 && (
+            <tr>
+              <td colSpan="4" style={{ textAlign: "center", padding: "10px" }}>
+                Không có người dùng nào
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
-};
+}
 
-export default AddUser;
+export default UserList;
