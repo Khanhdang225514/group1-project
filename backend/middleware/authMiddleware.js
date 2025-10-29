@@ -13,11 +13,11 @@ const authMiddleware = async (req, res, next) => {
     const user = await User.findById(decoded.id).select("-password");
     if (!user) return res.status(401).json({ message: "Người dùng không tồn tại." });
 
-    req.user = user; // gắn toàn bộ user
+    req.user = user; 
     next();
   } catch (err) {
     res.status(401).json({ message: "Xác thực thất bại." });
   }
 };
 
-module.exports = authMiddleware; // ✔ export trực tiếp, không dùng { protect }
+module.exports = authMiddleware; 
