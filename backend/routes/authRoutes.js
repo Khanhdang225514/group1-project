@@ -8,10 +8,10 @@ router.post('/logout', logout);
 
 const { forgotPassword, resetPassword } = require("../controllers/authController");
 
-// 1️⃣ Forgot Password
+
 router.post("/forgot-password", forgotPassword);
 
-// 2️⃣ Reset Password
+
 router.post("/reset-password/:token", resetPassword);
 
 module.exports = router;
