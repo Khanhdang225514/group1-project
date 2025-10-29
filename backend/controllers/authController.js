@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
 const crypto = require('crypto');
+const sendEmail = require("../utils/sendEmail"); // cần config nodemailer
 
 // Đăng ký
 exports.signup = async (req, res) => {
@@ -58,49 +59,51 @@ exports.logout = (req, res) => {
   
 // Quên mật khẩu
 exports.forgotPassword = async (req, res) => {
-  try {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ message: 'Email bắt buộc' });
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) return res.status(404).json({ message: "Email không tồn tại" });
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: 'Không tìm thấy email' });
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 phút
+  await user.save();
 
-    const resetToken = crypto.randomBytes(20).toString('hex');
-    user.resetToken = resetToken;
-    // expiry 1 hour
-    user.resetTokenExpires = Date.now() + 3600000;
-    await user.save();
+  const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+  const message = `Reset password: ${resetUrl}`;
 
-    // TODO: gửi mail thật bằng nodemailer/đổi thành service email
-    res.json({ message: 'Gửi token reset thành công (giả lập)', token: resetToken });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  await sendEmail({ to: user.email, subject: "Reset Password", text: message });
+  res.json({ message: "Email reset đã được gửi" });
 };
 
 // Đặt lại mật khẩu
 exports.resetPassword = async (req, res) => {
   try {
-    const { token, newPassword } = req.body;
-    if (!token || !newPassword) return res.status(400).json({ message: 'Thiếu token hoặc mật khẩu mới' });
+    const { newPassword } = req.body;
+    const { token } = req.params;
+
+    if (!token || !newPassword)
+      return res.status(400).json({ message: "Thiếu token hoặc mật khẩu mới" });
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const user = await User.findOne({
-      resetToken: token,
-      resetTokenExpires: { $gt: Date.now() },
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() },
     });
-    if (!user) return res.status(400).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
+    if (!user) return res.status(400).json({ message: "Token không hợp lệ hoặc đã hết hạn" });
 
-    // Mã hóa mật khẩu mới (Hàm pre-save trong model sẽ tự chạy)
-    user.password = newPassword; 
-    user.resetToken = undefined;
-    user.resetTokenExpires = undefined;
-    await user.save();
+    user.password = newPassword;           // <- assign plain password
+    user.resetPasswordToken = undefined;   // <- xóa token trước khi save
+    user.resetPasswordExpire = undefined;
 
-    res.json({ message: 'Đặt lại mật khẩu thành công' });
+    await user.save();                     // <- hook pre('save') sẽ hash password
+
+    res.json({ message: "Đặt lại mật khẩu thành công" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 // Upload avatar
 exports.uploadAvatar = async (req, res) => {

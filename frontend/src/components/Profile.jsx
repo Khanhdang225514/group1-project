@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import UploadAvatar from "./UploadAvatar";
 
 export default function Profile() {
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-  });
+  const [user, setUser] = useState({ name: "", email: "", avatar: "" });
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Lấy token từ localStorage (được lưu khi login)
+
   const token = localStorage.getItem("token");
 
-  // ✅ Gọi API GET /profile khi vào trang
+  // 🔹 Lấy thông tin user khi vào trang
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -20,11 +18,12 @@ export default function Profile() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // ✅ Nếu server trả về object user
+
         if (res.data) {
           setUser({
             name: res.data.name || "",
-            email: res.data.email || ""
+            email: res.data.email || "",
+            avatar: res.data.avatar || "",
           });
         }
       } catch (err) {
@@ -34,32 +33,37 @@ export default function Profile() {
         setLoading(false);
       }
     };
-
-    if (token) {
-      fetchProfile();
-    } else {
+    if (token) fetchProfile();
+    else {
       toast.error("Bạn chưa đăng nhập!");
       setLoading(false);
     }
   }, [token]);
 
-  // ✅ Hàm xử lý cập nhật thông tin
+  // 🔹 Cập nhật thông tin (tên)
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.put("http://localhost:5000/api/profile", user, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      toast.success("Cập nhật thông tin thành công!");
-      setUser(res.data.updated); // cập nhật lại UI sau khi PUT thành công
+      const res = await axios.put(
+        "http://localhost:5000/api/profile",
+        { name: user.name },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success("Cập nhật thành công!");
+      if (res.data.user) {
+        setUser({
+          name: res.data.user.name || "",
+          email: res.data.user.email || "",
+          avatar: res.data.user.avatar || "",
+        });
+      }
     } catch (err) {
       console.error(err);
       toast.error("Cập nhật thất bại!");
     }
   };
 
-  // ✅ Khi đang load
+
   if (loading) return <p style={{ textAlign: "center" }}>Đang tải...</p>;
 
   return (
@@ -75,6 +79,24 @@ export default function Profile() {
       }}
     >
       <h2>Thông tin cá nhân</h2>
+
+      {/* Hiển thị avatar + UploadAvatar */}
+      <div style={{ marginBottom: "20px" }}>
+        <img
+          src={user.avatar || "https://via.placeholder.com/150?text=No+Avatar"}
+          alt="Avatar"
+          style={{
+            width: "150px",
+            height: "150px",
+            borderRadius: "50%",
+            objectFit: "cover",
+            marginBottom: "10px",
+          }}
+        />
+       
+      </div>
+
+      {/* Form cập nhật tên */}
       <form onSubmit={handleUpdate}>
         <div style={{ marginBottom: "10px" }}>
           <label>Tên người dùng</label>
@@ -103,9 +125,6 @@ export default function Profile() {
           />
         </div>
 
-        
-
-      
 
         <button
           type="submit"

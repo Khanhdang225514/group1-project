@@ -23,11 +23,12 @@ const userSchema = new mongoose.Schema({
   ,
   avatar: {
     type: String,
+    default: "",
   },
-  resetToken: {
+  resetPasswordToken: {
     type: String,
   },
-  resetTokenExpires: {
+  resetPasswordExpire: {
     type: Date,
   }
 }, { timestamps: true });
@@ -55,10 +56,11 @@ userSchema.methods.comparePassword = async function(enteredPassword) {
 userSchema.set('toJSON', {
   transform: function (doc, ret, options) {
     delete ret.password;
-    delete ret.resetToken;
-    delete ret.resetTokenExpires;
+    delete ret.resetPasswordToken;
+    delete ret.resetPasswordExpire;
     return ret;
   }
 });
+
 
 module.exports = mongoose.model('User', userSchema);

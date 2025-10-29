@@ -6,6 +6,9 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import UserList from "./components/UserList";
 import Profile from "./components/Profile";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
+import UploadAvatar from "./components/UploadAvatar";
 import "./App.css";
 
 function App() {
@@ -37,33 +40,61 @@ function App() {
     setRole(null);
   };
 
+  const linkStyle = { color: "white", fontWeight: 600, textDecoration: "none" };
+
   return (
     <Router>
       <div style={{ fontFamily: "'Poppins', sans-serif", maxWidth: "1000px", margin: "40px auto", padding: "0 20px" }}>
         {/* Menu điều hướng */}
-        <nav style={{ display: "flex", justifyContent: "center", gap: "20px", marginBottom: "40px", padding: "14px 0", borderRadius: "10px", background: "linear-gradient(135deg, #ff914d, #ff5e62)", boxShadow: "0 4px 10px rgba(0,0,0,0.1)" }}>
+        <nav
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "20px",
+            marginBottom: "40px",
+            padding: "14px 0",
+            borderRadius: "10px",
+            background: "linear-gradient(135deg, #ff914d, #ff5e62)",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+          }}
+        >
           {!token ? (
             <>
-              <Link to="/login" style={{ color: "white", fontWeight: 600, textDecoration: "none" }}>Đăng nhập</Link>
-              <Link to="/signup" style={{ color: "white", fontWeight: 600, textDecoration: "none" }}>Đăng ký</Link>
+              <Link to="/login" style={linkStyle}>Đăng nhập</Link>
+              <Link to="/signup" style={linkStyle}>Đăng ký</Link>
+              <Link to="/forgot-password" style={linkStyle}>Quên mật khẩu</Link>
             </>
           ) : (
             <>
-              <Link to="/profile" style={{ color: "white", fontWeight: 600, textDecoration: "none" }}>Hồ sơ cá nhân</Link>
-              {role === "admin" && (
-                <Link to="/users" style={{ color: "white", fontWeight: 600, textDecoration: "none" }}>Quản lý người dùng</Link>
-              )}
-              <button onClick={handleLogout} style={{ border: "none", borderRadius: 5, padding: "6px 12px", backgroundColor: "#dc3545", color: "white", cursor: "pointer", fontWeight: 600 }}>Đăng xuất</button>
+              <Link to="/profile" style={linkStyle}>Hồ sơ cá nhân</Link>
+              <Link to="/upload-avatar" style={linkStyle}>Upload Avatar</Link>
+              {role === "admin" && <Link to="/users" style={linkStyle}>Quản lý người dùng</Link>}
+              <button
+                onClick={handleLogout}
+                style={{ border: "none", borderRadius: 5, padding: "6px 12px", backgroundColor: "#dc3545", color: "white", cursor: "pointer", fontWeight: 600 }}
+              >
+                Đăng xuất
+              </button>
             </>
           )}
         </nav>
 
         {/* Routes */}
         <Routes>
+          {/* Auth */}
           <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
           <Route path="/signup" element={<Signup />} />
+
+          {/* Profile & User management */}
           <Route path="/profile" element={token ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/users" element={token && role === "admin" ? <UserList /> : <Navigate to="/login" />} />
+
+          {/* Tính năng nâng cao */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/upload-avatar" element={token ? <UploadAvatar /> : <Navigate to="/login" />} />
+
+          {/* Fallback route */}
           <Route path="*" element={<Navigate to={token ? "/profile" : "/login"} />} />
         </Routes>
 
