@@ -6,8 +6,6 @@ export default function Profile() {
   const [user, setUser] = useState({
     name: "",
     email: "",
-    phone: "",
-    address: "",
   });
   const [loading, setLoading] = useState(true);
 
@@ -26,9 +24,7 @@ export default function Profile() {
         if (res.data) {
           setUser({
             name: res.data.name || "",
-            email: res.data.email || "",
-            phone: res.data.phone || "",
-            address: res.data.address || "",
+            email: res.data.email || ""
           });
         }
       } catch (err) {
@@ -107,27 +103,9 @@ export default function Profile() {
           />
         </div>
 
-        <div style={{ marginBottom: "10px" }}>
-          <label>Số điện thoại</label>
-          <br />
-          <input
-            type="text"
-            value={user.phone}
-            onChange={(e) => setUser({ ...user, phone: e.target.value })}
-            style={{ width: "90%", padding: "8px", marginTop: "5px" }}
-          />
-        </div>
+        
 
-        <div style={{ marginBottom: "10px" }}>
-          <label>Địa chỉ</label>
-          <br />
-          <input
-            type="text"
-            value={user.address}
-            onChange={(e) => setUser({ ...user, address: e.target.value })}
-            style={{ width: "90%", padding: "8px", marginTop: "5px" }}
-          />
-        </div>
+      
 
         <button
           type="submit"
