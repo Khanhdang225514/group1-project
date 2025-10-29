@@ -20,7 +20,8 @@ const AddUser = ({ fetchUsers }) => {
     }
 
     try {
-      await axios.post("http://localhost:3000/users", { name, email });
+// ĐÚNG
+      await axios.post("http://localhost:5000/api/users", { name, email });
       setName("");
       setEmail("");
       setError("");
