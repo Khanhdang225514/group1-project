@@ -1,19 +1,29 @@
 import React, { useState } from "react";
-import { loginUser } from "../api/auth";
+import { loginUser } from "../api/auth"; // Hàm này đã tự lưu token
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify"; // Dùng toast thay vì alert
 
-function Login({ onLogin }) {
+// 1. Nhận prop { onLoginSuccess } từ App.js
+function Login({ onLoginSuccess }) { 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await loginUser({ email, password });
-      localStorage.setItem("token", res.data.token);
-      alert("Đăng nhập thành công!");
-      onLogin();
+      await loginUser({ email, password }); // Gọi API (đã tự lưu token)
+      
+      toast.success("Đăng nhập thành công!");
+      
+      // 2. Báo cho App.js biết là đã đăng nhập xong
+      onLoginSuccess(); 
+      
+      // 3. Điều hướng về trang chủ (App.js sẽ tự xử lý đưa đến /users)
+      navigate("/"); 
+
     } catch (err) {
-      alert("Sai tài khoản hoặc mật khẩu!");
+      toast.error("Sai tài khoản hoặc mật khẩu!");
     }
   };
 
@@ -45,4 +55,4 @@ function Login({ onLogin }) {
   );
 }
 
-export default Login;
+  export default Login;

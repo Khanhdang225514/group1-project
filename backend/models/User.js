@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs'); // <-- THÊM DÒNG NÀY
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -31,7 +32,26 @@ const userSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-// Hide sensitive fields when converting to JSON
+// --- TỰ ĐỘNG MÃ HÓA MẬT KHẨU (BẮT BUỘC) ---
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// --- HÀM SO SÁNH MẬT KHẨU (BẮT BUỘC) ---
+userSchema.methods.comparePassword = async function(enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Hide sensitive fields when converting to JSON (Phần này bạn làm tốt)
 userSchema.set('toJSON', {
   transform: function (doc, ret, options) {
     delete ret.password;

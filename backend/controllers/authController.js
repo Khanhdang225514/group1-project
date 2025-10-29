@@ -1,8 +1,9 @@
 const User = require('../models/User');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt'); // Dùng trong hàm login, resetPassword
 const jwt = require('jsonwebtoken');
 const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
+const crypto = require('crypto');
 
 // Đăng ký
 exports.signup = async (req, res) => {
@@ -13,12 +14,13 @@ exports.signup = async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: 'Email đã tồn tại' });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ name, email, password: hashedPassword, role });
+    // === SỬA LỖI MÃ HÓA KÉP ===
+    // Xóa dòng bcrypt.hash ở đây.
+    // Gửi mật khẩu thuần, để Model (User.js) tự mã hóa.
+    const newUser = await User.create({ name, email, password, role });
 
-    // Remove sensitive fields (schema toJSON also hides password)
-    const userObj = newUser.toObject();
-    delete userObj.password;
+    // Remove sensitive fields (schema toJSON cũng đã tự động ẩn password)
+     const userObj = newUser.toObject();
 
     res.status(201).json({ message: 'Đăng ký thành công', user: userObj });
   } catch (err) {
@@ -33,6 +35,8 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Sai email hoặc mật khẩu' });
 
+    // Dùng hàm .comparePassword() từ Model (nếu bạn đã thêm)
+    // Hoặc dùng bcrypt.compare() trực tiếp như vầy cũng TỐT
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(400).json({ message: 'Sai email hoặc mật khẩu' });
 
@@ -50,14 +54,8 @@ exports.login = async (req, res) => {
 // Đăng xuất (client sẽ tự xóa token)
 exports.logout = (req, res) => {
   res.json({ message: 'Đăng xuất thành công (client xóa token)' });
-};
-
-
-
-
-const crypto = require('crypto');
-
-
+  };
+  
 // Quên mật khẩu
 exports.forgotPassword = async (req, res) => {
   try {
@@ -88,11 +86,12 @@ exports.resetPassword = async (req, res) => {
 
     const user = await User.findOne({
       resetToken: token,
-resetTokenExpires: { $gt: Date.now() },
+      resetTokenExpires: { $gt: Date.now() },
     });
     if (!user) return res.status(400).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
 
-    user.password = await bcrypt.hash(newPassword, 10);
+    // Mã hóa mật khẩu mới (Hàm pre-save trong model sẽ tự chạy)
+    user.password = newPassword; 
     user.resetToken = undefined;
     user.resetTokenExpires = undefined;
     await user.save();
