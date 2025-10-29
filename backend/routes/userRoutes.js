@@ -1,61 +1,50 @@
-// backend/routes/userRoutes.js
 const express = require("express");
 const router = express.Router();
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-// 🟢 Lấy danh sách user
-router.get("/", async (req, res) => {
+// Signup
+router.post("/signup", async (req, res) => {
+  const { name, email, password } = req.body;
   try {
-    const users = await User.find();
-    res.json(users);
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return res.status(400).json({ message: "Email đã tồn tại!" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ name, email, password: hashedPassword });
+    await newUser.save();
+    res.status(201).json({ message: "Đăng ký thành công!" });
   } catch (err) {
-    console.error("❌ Lỗi khi lấy danh sách user:", err.message);
-    res.status(500).json({ message: "Lỗi server khi lấy danh sách user" });
+    res.status(500).json({ message: "Lỗi server", error: err.message });
   }
 });
 
-// 🟢 Thêm user mới
-router.post("/", async (req, res) => {
+// Login
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const { name, email } = req.body;
-    if (!name || !email)
-      return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin" });
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "Email không tồn tại!" });
 
-    const existing = await User.findOne({ email });
-    if (existing)
-      return res.status(409).json({ message: "Email đã tồn tại" });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: "Mật khẩu sai!" });
 
-    const user = await User.create({ name, email });
-    res.status(201).json(user);
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({ message: "Đăng nhập thành công!", token });
   } catch (err) {
-    console.error("❌ Lỗi khi thêm user:", err.message);
-    res.status(500).json({ message: "Lỗi server khi thêm user" });
+    res.status(500).json({ message: "Lỗi server", error: err.message });
   }
 });
 
-// 🟢 Cập nhật user
-router.put("/:id", async (req, res) => {
-  try {
-    const { name, email } = req.body;
-    const user = await User.findByIdAndUpdate(req.params.id, { name, email }, { new: true });
-    if (!user) return res.status(404).json({ message: "Không tìm thấy user" });
-    res.json(user);
-  } catch (err) {
-    console.error("❌ Lỗi khi cập nhật user:", err.message);
-    res.status(500).json({ message: "Lỗi server khi cập nhật user" });
-  }
-});
-
-// 🟢 Xóa user
-router.delete("/:id", async (req, res) => {
-  try {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ message: "Không tìm thấy user" });
-    res.json({ message: "✅ Đã xóa user thành công" });
-  } catch (err) {
-    console.error("❌ Lỗi khi xóa user:", err.message);
-    res.status(500).json({ message: "Lỗi server khi xóa user" });
-  }
+// Logout
+router.post("/logout", (req, res) => {
+  res.json({ message: "Đã đăng xuất!" });
 });
 
 module.exports = router;
