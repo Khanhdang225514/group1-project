@@ -3,7 +3,9 @@ const router = express.Router();
 const { getProfile, updateProfile } = require('../controllers/profileController');
 const { protect } = require('../middleware/authMiddleware');
 
-router.get('/profile', protect, getProfile);
-router.put('/profile', protect, updateProfile);
+// SỬA Ở ĐÂY: Đổi '/profile' thành '/'
+// URL cuối cùng sẽ là: /api/profile + / = /api/profile
+router.get('/', protect, getProfile);
+router.put('/', protect, updateProfile);
 
-module.exports = router;
+    module.exports = router;
