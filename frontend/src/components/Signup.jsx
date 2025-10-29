@@ -3,75 +3,141 @@ import { registerUser } from "../api/auth";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const Signup = () => {
+export default function Signup() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
+
+    if (!form.name || !form.email || !form.password) {
+      toast.warning("⚠️ Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+
+    setLoading(true);
     try {
       await registerUser(form);
-      toast.success("Đăng ký thành công!");
+      toast.success("🎉 Đăng ký thành công!");
       setForm({ name: "", email: "", password: "" });
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Đăng ký thất bại!");
+    } catch (err) {
+      toast.error("❌ Email đã tồn tại hoặc dữ liệu không hợp lệ!");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: 50 }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        fontFamily: "Segoe UI, sans-serif",
+      }}
+    >
       <ToastContainer position="top-center" />
-      <h2>Đăng ký tài khoản</h2>
-      <form onSubmit={handleSubmit} style={{ display: "inline-block" }}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Tên"
-          value={form.name}
-          onChange={handleChange}
-          required
-          style={{ margin: 5, padding: 8 }}
-        />
-        <br />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-          style={{ margin: 5, padding: 8 }}
-        />
-        <br />
-        <input
-          type="password"
-          name="password"
-          placeholder="Mật khẩu"
-          value={form.password}
-          onChange={handleChange}
-          required
-          style={{ margin: 5, padding: 8 }}
-        />
-        <br />
-        <button
-          type="submit"
-          style={{
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: 5,
-            padding: "8px 15px",
-            cursor: "pointer",
-          }}
-        >
-          Đăng ký
-        </button>
-      </form>
+      <div
+        style={{
+          backgroundColor: "#fff",
+          padding: "40px 50px",
+          borderRadius: "15px",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+          width: "100%",
+          maxWidth: "400px",
+          textAlign: "center",
+        }}
+      >
+        <h2 style={{ marginBottom: "30px", color: "#333" }}>Đăng ký tài khoản</h2>
+        <form onSubmit={handleSignup}>
+          <input
+            type="text"
+            name="name"
+            placeholder="Tên người dùng"
+            value={form.name}
+            onChange={handleChange}
+            style={{
+              width: "100%",
+              marginBottom: "15px",
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "15px",
+              outline: "none",
+              transition: "border-color 0.2s",
+            }}
+            onFocus={(e) => (e.target.style.borderColor = "#6fa3ef")}
+            onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            style={{
+              width: "100%",
+              marginBottom: "15px",
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "15px",
+              outline: "none",
+              transition: "border-color 0.2s",
+            }}
+            onFocus={(e) => (e.target.style.borderColor = "#6fa3ef")}
+            onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Mật khẩu"
+            value={form.password}
+            onChange={handleChange}
+            style={{
+              width: "100%",
+              marginBottom: "25px",
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "15px",
+              outline: "none",
+              transition: "border-color 0.2s",
+            }}
+            onFocus={(e) => (e.target.style.borderColor = "#6fa3ef")}
+            onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+          />
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: "100%",
+              padding: "12px",
+              borderRadius: "8px",
+              border: "none",
+              backgroundColor: loading ? "#aaa" : "#6fa3ef",
+              color: "#fff",
+              fontSize: "16px",
+              cursor: loading ? "not-allowed" : "pointer",
+              transition: "background-color 0.3s",
+            }}
+            onMouseOver={(e) => {
+              if (!loading) e.target.style.backgroundColor = "#558de8";
+            }}
+            onMouseOut={(e) => {
+              if (!loading) e.target.style.backgroundColor = "#6fa3ef";
+            }}
+          >
+            {loading ? "Đang đăng ký..." : "Đăng ký"}
+          </button>
+        </form>
+      </div>
     </div>
   );
-};
-
-export default Signup;
+}
