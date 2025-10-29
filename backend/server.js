@@ -9,7 +9,7 @@ const path = require('path');
 const app = express();
 
 // --- MIDDLEWARES ---
-app.use(express.json());               // parse JSON body
+app.use(express.json()); // parse JSON body
 app.use(express.urlencoded({ extended: true })); // parse form data
 app.use(cookieParser());
 app.use(cors({
@@ -22,10 +22,10 @@ const connectDB = async () => {
   try {
     const mongoURI = process.env.MONGO_URI;
     if (!mongoURI) throw new Error('MONGO_URI not defined in .env');
-    await mongoose.connect(mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
+    
+    // Đã loại bỏ các tùy chọn cũ (useNewUrlParser, useUnifiedTopology)
+    await mongoose.connect(mongoURI);
+    
     console.log('✅ MongoDB connected');
   } catch (err) {
     console.error('❌ MongoDB connection error:', err.message);
@@ -35,18 +35,13 @@ const connectDB = async () => {
 connectDB();
 
 // --- ROUTES ---
-// NOTE: các file route dưới đây giả định bạn đã tạo:
-// ./routes/authRoutes.js, ./routes/userRoutes.js, ./routes/profileRoutes.js, ./routes/adminRoutes.js
-// Nếu bạn dùng tên file khác thì chỉnh require tương ứng.
-
-const authRoutes = require('./routes/authRoutes');       // /api/auth
-const userRoutes = require('./routes/userRoutes');       // /api/users  (CRUD, admin)
-app.use('/api/users', userRoutes);
-
-const profileRoutes = require('./routes/profileRoutes'); // /api/profile
-const adminRoutes = require('./routes/adminRoutes');     // /api/admin (nếu bạn tách riêng)
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const profileRoutes = require('./routes/profileRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 // Mount APIs
+// Đã xóa dòng app.use('/api/users', userRoutes); bị trùng lặp ở trên
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/profile', profileRoutes);
@@ -70,5 +65,4 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-});
-
+  });

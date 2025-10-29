@@ -14,7 +14,8 @@ function App() {
   // 🟢 Lấy danh sách user từ backend
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://localhost:3000/users");
+      // SỬA LỖI: Trỏ đến port 5000 và thêm /api
+      const res = await fetch("http://localhost:5000/api/users");
       const data = await res.json();
       setUsers(data);
     } catch (err) {
@@ -30,7 +31,8 @@ function App() {
     try {
       if (editingUser) {
         // 👉 Nếu đang chỉnh sửa
-        await fetch(`http://localhost:3000/users/${editingUser._id}`, {
+        // SỬA LỖI: Trỏ đến port 5000 và thêm /api
+        await fetch(`http://localhost:5000/api/users/${editingUser._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name, email }),
@@ -38,7 +40,8 @@ function App() {
         toast.success("✅ Cập nhật người dùng thành công!");
       } else {
         // 👉 Nếu đang thêm mới
-        await fetch("http://localhost:3000/users", {
+        // SỬA LỖI: Trỏ đến port 5000 và thêm /api
+        await fetch("http://localhost:5000/api/users", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name, email }),
@@ -64,7 +67,8 @@ function App() {
     if (!window.confirm("Bạn có chắc muốn xóa người dùng này?")) return;
 
     try {
-      await fetch(`http://localhost:3000/users/${id}`, { method: "DELETE" });
+      // SỬA LỖI: Trỏ đến port 5000 và thêm /api
+      await fetch(`http://localhost:5000/api/users/${id}`, { method: "DELETE" });
       toast.info("🗑️ Xóa người dùng thành công!");
       fetchUsers();
     } catch (err) {
@@ -84,14 +88,12 @@ function App() {
     fetchUsers();
   }, []);
 
-  return (
-
+    return (
     <div style={{ maxWidth: "800px", margin: "50px auto", fontFamily: "Arial" }}>
       {/* Thông báo Toast */}
       <ToastContainer position="top-center" autoClose={2000} />
-      <h1 style={{ textAlign: "center", color: "#007bff" }}>Quản lý người dùng</h1>
-
-
+       <h1 style={{ textAlign: "center", color: "#007bff" }}>Quản lý người dùng</h1>
+      
       {/* Form thêm / sửa */}
       <form
         onSubmit={handleSubmit}
@@ -207,4 +209,4 @@ function App() {
   );
 }
 
-export default App;
+  export default App;
