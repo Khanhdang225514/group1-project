@@ -5,7 +5,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const connectDB = require('./config/db'); // Giả sử bạn có file kết nối DB
 const cors = require('cors');
-dotenv.config(); // Load biến môi trường từ file .env
+//dotenv.config(); // Load biến môi trường từ file .env
 console.log('JWT Secret from .env:', process.env.JWT_SECRET); 
 const cookieParser = require('cookie-parser');
 connectDB(); // Kết nối tới MongoDB
