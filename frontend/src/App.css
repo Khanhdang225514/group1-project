@@ -1,0 +1,165 @@
+/* 🌐 App.css - Giao diện hiện đại, chuyên nghiệp */
+.App {
+  text-align: center;
+  background: linear-gradient(135deg, #1e1e2f, #2d2f45);
+  color: #f5f5f5;
+  min-height: 100vh;
+  font-family: 'Poppins', 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem;
+}
+
+/* 🌟 Header */
+.App-header {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 35px; /* tăng từ 20px lên 35px */
+}
+
+.App-header h1 {
+  font-size: 2rem;
+  color: #61dafb;
+  margin: 0;
+}
+
+/* 🌐 Navigation */
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 35px; /* tăng từ 20px lên 35px */
+  padding: 0;
+  margin: 0;
+}
+
+nav li {
+  display: inline-block;
+}
+
+nav a, .logout-button {
+  text-decoration: none;
+  padding: 12px 20px; /* tăng padding cho nút to hơn */
+  border-radius: 10px;
+  background-color: rgba(97, 218, 251, 0.2);
+  color: #61dafb;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+nav a:hover, .logout-button:hover {
+  background-color: rgba(97, 218, 251, 0.4);
+  color: #ffffff;
+}
+
+/* 🌈 Main content */
+.App-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;       /* căn giữa ngang */
+  justify-content: center;   /* căn giữa dọc */
+  text-align: center;
+  padding: 4rem;
+  gap: 15px;
+}
+
+.App-main h2 {
+  font-size: 2.5rem;
+  color: #61dafb;
+  margin-bottom: 0.5rem;
+}
+
+.App-main h3 {
+  font-size: 1.8rem;
+  color: #8be9fd;
+  margin-bottom: 1rem;
+}
+
+.App-main p {
+  font-size: 1.2rem;
+  color: #cfd8dc;
+}
+
+/* 🌟 Buttons chung */
+button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background-color: #61dafb;
+  color: #1e1e2f;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #8be9fd;
+}
+
+/* Input chung */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  margin-bottom: 15px;
+  transition: border 0.3s ease;
+}
+
+input:focus {
+  border: 1px solid #61dafb;
+  outline: none;
+}
+
+/* Links đẹp */
+.App-link {
+  color: #61dafb;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.App-link:hover {
+  color: #8be9fd;
+}
+
+/* ⚡ Responsive */
+@media (max-width: 768px) {
+  .App-header {
+    padding: 20px;
+    border-radius: 15px;
+    gap: 25px; /* giảm khoảng cách trên mobile */
+  }
+
+  nav ul {
+    flex-direction: column;
+    gap: 15px; /* giảm khoảng cách nút trên mobile */
+  }
+
+  .App-main h2 {
+    font-size: 2rem;
+  }
+
+  .App-main h3 {
+    font-size: 1.5rem;
+  }
+
+  .App-main p {
+    font-size: 1rem;
+  }
+}
