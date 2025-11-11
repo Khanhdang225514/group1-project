@@ -1,6 +1,8 @@
 // /backend/server.js
 const express = require('express');
-const dotenv = require('dotenv');
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 const connectDB = require('./config/db'); // Giả sử bạn có file kết nối DB
 const cors = require('cors');
 dotenv.config(); // Load biến môi trường từ file .env
