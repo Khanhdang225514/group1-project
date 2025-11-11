@@ -12,10 +12,35 @@ connectDB(); // Kết nối tới MongoDB
 
 const app = express();
 
-app.use(cors({
-    origin: 'http://localhost:3001', // Chỉ định rõ nguồn gốc của frontend
-    credentials: true // <<< Rất quan trọng: Cho phép gửi cookie
-}));
+// --- Sửa đoạn CORS của bạn như sau ---
+
+// Tạo một "whitelist" (danh sách cho phép)
+// Nó bao gồm máy local (để bạn test) và URL production (lấy từ biến môi trường)
+const whitelist = [
+  'http://localhost:3000', // Sửa thành port frontend local của bạn (3000 hay 3001?)
+  'http://localhost:3001',
+  process.env.FRONTEND_URL  // Đây là 'https://group1-project-x1.vercel.app'
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Kiểm tra xem origin (nơi gửi request) có trong whitelist không
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      // Cho phép nếu nó nằm trong whitelist
+      // (hoặc !origin - cho phép các công cụ như Postman)
+      callback(null, true);
+    } else {
+      // Từ chối nếu không nằm trong whitelist
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true // Giữ nguyên dòng này
+};
+
+// Dùng corsOptions đã cấu hình
+app.use(cors(corsOptions));
+
+// ------------------------------------
 // Middleware để đọc req.body dạng JSON
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
